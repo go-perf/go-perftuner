@@ -2,6 +2,23 @@
 
 Helper tool for manual Go code optimization.
 
+# Installation / Quick Start
+
+```
+# Install go-perftune:
+$ go get -u github.com/Quasilyte/go-perftune
+
+# Check installation (prints help):
+$ go-perftune
+
+# Run almostInlined sub-command on strings and bytes package:
+$ go-perftune almostInlined strings bytes
+
+# You can use "std" or "..." package name.
+# These follow "go build" conventions.
+$ go-perftune almostInlined std
+```
+
 # Sub-commands
 
 ## almostInlined
