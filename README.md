@@ -4,7 +4,7 @@ Helper tool for manual Go code optimization.
 
 # Installation / Quick Start
 
-```
+```bash
 # Install go-perftune:
 $ go get -u github.com/Quasilyte/go-perftune
 
@@ -25,7 +25,7 @@ $ go-perftune almostInlined std
 
 Find functions that cross inlining threshold just barely.
 
-```
+```bash
 $ perftune almostInlined -threshold=1 std
 almostInlined: std: src/strconv/atof.go:371:6: atof64exact: budget exceeded by 1
 almostInlined: std: src/strconv/atof.go:405:6: atof32exact: budget exceeded by 1
