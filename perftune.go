@@ -13,6 +13,11 @@ var subCommands = []*subCommand{
 		name:    "almostInlined",
 		summary: "find functions that cross inlining threshold just barely",
 	},
+	{
+		runner:  &escapeAnalysisRunner{},
+		name:    "escapedVariables",
+		summary: "",
+	},
 }
 
 type subCommandRunner interface {
