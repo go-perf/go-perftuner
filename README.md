@@ -37,3 +37,14 @@ almostInlined: std: src/crypto/x509/x509.go:1890:58: buildExtensions.func2.4.1: 
 almostInlined: std: src/crypto/tls/handshake_messages.go:1450:6: (*newSessionTicketMsg).marshal: budget exceeded by 1
 almostInlined: std: src/net/http/transfer.go:259:6: (*transferWriter).shouldSendContentLength: budget exceeded by 1
 ```
+
+## escapedVariables
+
+Find variables that are escaped to the heap.
+
+```bash
+$ perftune escapedVariables fmt
+escapedVariables: fmt: src/fmt/format.go:73:13: make(buffer, cap(buf) * 2 + n)
+escapedVariables: fmt: src/fmt/format.go:147:14: make([]byte, width)
+escapedVariables: fmt: src/fmt/format.go:208:14: make([]byte, width)
+```
