@@ -18,6 +18,11 @@ var subCommands = []*subCommand{
 		name:    "escapedVariables",
 		summary: "",
 	},
+	{
+		runner:  &boundCheckRunner{},
+		name:    "boundChecks",
+		summary: "find slice/array that has bound check",
+	},
 }
 
 type subCommandRunner interface {

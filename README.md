@@ -48,3 +48,15 @@ escapedVariables: fmt: src/fmt/format.go:73:13: make(buffer, cap(buf) * 2 + n)
 escapedVariables: fmt: src/fmt/format.go:147:14: make([]byte, width)
 escapedVariables: fmt: src/fmt/format.go:208:14: make([]byte, width)
 ```
+
+## boundChecks
+
+Find slice/array that has bound check.
+
+```bash
+$ perftune boundChecks fmt
+boundChecks: fmt: src/fmt/format.go:82:16: slice/array has bound checks
+boundChecks: fmt: src/fmt/format.go:157:10: slice/array has bound checks
+boundChecks: fmt: src/fmt/format.go:159:22: slice/array has bound checks
+boundChecks: fmt: src/fmt/format.go:161:10: slice/array has bound checks
+```
