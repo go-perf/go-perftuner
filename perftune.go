@@ -16,7 +16,7 @@ var subCommands = []*subCommand{
 	{
 		runner:  &escapeAnalysisRunner{},
 		name:    "escapedVariables",
-		summary: "",
+		summary: "find variables that are escaped to the heap",
 	},
 	{
 		runner:  &boundCheckRunner{},
