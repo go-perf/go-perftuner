@@ -2,13 +2,13 @@
 
 Helper tool for manual Go code optimization.
 
-The original implementation was started by [@quasilyte](https://github.com/quasilyte) thanks to him :tada:
+This tool gives you an easy way to get the Go compiler output regarding specific optimisations. Like: function inlining, variable escape and bounds checks.
 
 # Installation / Quick Start
 
 ```bash
 # Install go-perftune:
-$ go get -u github.com/cristaloleg/go-perftune
+$ go get -u github.com/cristaloleg/go-perftuner
 
 # Check installation (prints help):
 $ go-perftune
@@ -62,3 +62,7 @@ boundChecks: fmt: src/fmt/format.go:157:10: slice/array has bound checks
 boundChecks: fmt: src/fmt/format.go:159:22: slice/array has bound checks
 boundChecks: fmt: src/fmt/format.go:161:10: slice/array has bound checks
 ```
+
+# Notes
+
+The original implementation was started by [@quasilyte](https://github.com/quasilyte) thanks to him :tada:
