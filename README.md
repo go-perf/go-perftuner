@@ -2,6 +2,8 @@
 
 Helper tool for manual Go code optimization.
 
+The original implementation was started by [@quasilyte](https://github.com/quasilyte) thanks to him :tada:
+
 # Installation / Quick Start
 
 ```bash
