@@ -11,14 +11,14 @@ This tool gives you an easy way to get the Go compiler output regarding specific
 $ go get -u github.com/cristaloleg/go-perftuner
 
 # Check installation (prints help):
-$ go-perftune
+$ go-perftuner
 
 # Run almostInlined sub-command on strings and bytes package:
-$ go-perftune almostInlined strings bytes
+$ go-perftuner almostInlined strings bytes
 
 # You can use "std" or "..." package name.
 # These follow "go build" conventions.
-$ go-perftune almostInlined std
+$ go-perftuner almostInlined std
 ```
 
 # Sub-commands
@@ -28,7 +28,7 @@ $ go-perftune almostInlined std
 Find functions that cross inlining threshold just barely.
 
 ```bash
-$ perftune almostInlined -threshold=1 std
+$ go-perftuner almostInlined -threshold=1 std
 almostInlined: std: src/strconv/atof.go:371:6: atof64exact: budget exceeded by 1
 almostInlined: std: src/strconv/atof.go:405:6: atof32exact: budget exceeded by 1
 almostInlined: std: src/reflect/value.go:1199:6: Value.OverflowComplex: budget exceeded by 1
@@ -45,7 +45,7 @@ almostInlined: std: src/net/http/transfer.go:259:6: (*transferWriter).shouldSend
 Find variables that are escaped to the heap.
 
 ```bash
-$ perftune escapedVariables fmt
+$ go-perftuner escapedVariables fmt
 escapedVariables: fmt: src/fmt/format.go:73:13: make(buffer, cap(buf) * 2 + n)
 escapedVariables: fmt: src/fmt/format.go:147:14: make([]byte, width)
 escapedVariables: fmt: src/fmt/format.go:208:14: make([]byte, width)
@@ -56,7 +56,7 @@ escapedVariables: fmt: src/fmt/format.go:208:14: make([]byte, width)
 Find slice/array that has bound check.
 
 ```bash
-$ perftune boundChecks fmt
+$ go-perftuner boundChecks fmt
 boundChecks: fmt: src/fmt/format.go:82:16: slice/array has bound checks
 boundChecks: fmt: src/fmt/format.go:157:10: slice/array has bound checks
 boundChecks: fmt: src/fmt/format.go:159:22: slice/array has bound checks
