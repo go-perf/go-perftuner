@@ -6,7 +6,7 @@ Helper tool for manual Go code optimization.
 
 ```bash
 # Install go-perftune:
-$ go get -u github.com/Quasilyte/go-perftune
+$ go get -u github.com/cristaloleg/go-perftune
 
 # Check installation (prints help):
 $ go-perftune
