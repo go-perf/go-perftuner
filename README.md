@@ -1,4 +1,4 @@
-# go-perftune
+# go-perftuner
 
 Helper tool for manual Go code optimization.
 
@@ -7,7 +7,7 @@ This tool gives you an easy way to get the Go compiler output regarding specific
 # Installation / Quick Start
 
 ```bash
-# Install go-perftune:
+# Install go-perftuner:
 $ go get -u github.com/cristaloleg/go-perftuner
 
 # Check installation (prints help):
