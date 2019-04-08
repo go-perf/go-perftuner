@@ -9,19 +9,22 @@ import (
 
 var subCommands = []*subCommand{
 	{
-		runner:  &almostInlinedRunner{},
-		name:    "almostInlined",
-		summary: "find functions that cross inlining threshold just barely",
+		runner:    &almostInlinedRunner{},
+		name:      "almostInlined",
+		shortName: "inl",
+		summary:   "find functions that cross inlining threshold just barely",
 	},
 	{
-		runner:  &escapeAnalysisRunner{},
-		name:    "escapedVariables",
-		summary: "find variables that are escaped to the heap",
+		runner:    &escapeAnalysisRunner{},
+		name:      "escapedVariables",
+		shortName: "esc",
+		summary:   "find variables that are escaped to the heap",
 	},
 	{
-		runner:  &boundCheckRunner{},
-		name:    "boundChecks",
-		summary: "find slice/array that has bound check",
+		runner:    &boundCheckRunner{},
+		name:      "boundChecks",
+		shortName: "bce",
+		summary:   "find slice/array that has bound check",
 	},
 }
 
@@ -31,9 +34,10 @@ type subCommandRunner interface {
 }
 
 type subCommand struct {
-	runner  subCommandRunner
-	name    string
-	summary string
+	runner    subCommandRunner
+	name      string
+	shortName string
+	summary   string
 }
 
 func main() {
@@ -74,7 +78,7 @@ func main() {
 // Returns nil if requested command not found.
 func findSubCommand(name string) *subCommand {
 	for _, cmd := range subCommands {
-		if cmd.name == name {
+		if cmd.name == name || cmd.shortName == name {
 			return cmd
 		}
 	}
