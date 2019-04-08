@@ -12,7 +12,7 @@ type boundCheckRunner struct {
 }
 
 func (r *boundCheckRunner) Init() {
-	const location = `(src/.*:\d+:\d+)`
+	const location = `(.*:\d+:\d+)`
 	const function = `((?:\S*)?\w+)`
 	const pat = location + `: Found Is(Slice)?InBounds`
 	r.messageRE = regexp.MustCompile(pat)
