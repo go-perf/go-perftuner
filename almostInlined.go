@@ -17,7 +17,7 @@ type almostInlinedRunner struct {
 func (r *almostInlinedRunner) Init() {
 	flag.IntVar(&r.threshold, "threshold", 10, `max inliner budget overflow threshold`)
 
-	const location = `(src/.*:\d+:\d+)`
+	const location = `(.*:\d+:\d+)`
 	const function = `((?:\S*)?\w+)`
 	const pat = location + `: .*? ` + function + `: function too complex: cost (\d+) exceeds budget (\d+)`
 	r.messageRE = regexp.MustCompile(pat)
