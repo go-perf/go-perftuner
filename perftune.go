@@ -93,7 +93,7 @@ func printUsage() {
 func printSupportedSubs() {
 	stderrPrintf("Supported sub-commands:\n")
 	for _, cmd := range subCommands {
-		stderrPrintf("\t%s - %s\n", cmd.name, cmd.summary)
+		stderrPrintf("\t%s (or %s) - %s\n", cmd.name, cmd.shortName, cmd.summary)
 	}
 }
 
