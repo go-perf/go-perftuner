@@ -19,7 +19,7 @@ func (r *boundCheckRunner) Init() {
 }
 
 func (r *boundCheckRunner) Run(pkg string) error {
-	cmd := exec.Command("go", "build", "-gcflags", "-d=ssa/check_bce/debug=1", pkg)
+	cmd := exec.Command("go", r.getCmd(pkg)...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -46,4 +46,8 @@ func (r *boundCheckRunner) Run(pkg string) error {
 		log.Printf("%s: slice/array has bound checks\n", r.Loc)
 	}
 	return nil
+}
+
+func (r *boundCheckRunner) getCmd(pkg string) []string {
+	return goArgs(pkg, goArgsBuild, goArgsGcFlags("-d=ssa/check_bce/debug=1"))
 }
