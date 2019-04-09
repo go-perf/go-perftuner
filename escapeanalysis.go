@@ -25,10 +25,29 @@ func (r *escapeAnalysisRunner) Run(pkg string) error {
 		return fmt.Errorf("%v: %s", err, out)
 	}
 
+	type escapeAnalysisResult struct {
+		Loc      string `json:"loc"`
+		Variable string `json:"var"`
+	}
+	results := []escapeAnalysisResult{}
+
 	for _, submatches := range r.messageRE.FindAllStringSubmatch(string(out), -1) {
 		loc := submatches[1]
 		variable := submatches[2]
-		log.Printf("%s: %s\n", loc, variable)
+
+		results = append(results, escapeAnalysisResult{
+			Loc:      loc,
+			Variable: variable,
+		})
+	}
+
+	if asJSON {
+		marshalJSON(results)
+		return nil
+	}
+
+	for _, r := range results {
+		log.Printf("%s: %s\n", r.Loc, r.Variable)
 	}
 	return nil
 }

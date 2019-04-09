@@ -25,10 +25,25 @@ func (r *boundCheckRunner) Run(pkg string) error {
 		return fmt.Errorf("%v: %s", err, out)
 	}
 
+	type boundCheckResult struct {
+		Loc string `json:"loc"`
+	}
+	results := []boundCheckResult{}
+
 	for _, submatches := range r.messageRE.FindAllStringSubmatch(string(out), -1) {
 		loc := submatches[1]
-		log.Printf("%s: slice/array has bound checks\n", loc)
+		results = append(results, boundCheckResult{
+			Loc: loc,
+		})
 	}
 
+	if asJSON {
+		marshalJSON(results)
+		return nil
+	}
+
+	for _, r := range results {
+		log.Printf("%s: slice/array has bound checks\n", r.Loc)
+	}
 	return nil
 }

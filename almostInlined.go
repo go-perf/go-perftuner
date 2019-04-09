@@ -30,16 +30,38 @@ func (r *almostInlinedRunner) Run(pkg string) error {
 		return fmt.Errorf("%v: %s", err, out)
 	}
 
+	type almostInlinedResult struct {
+		Loc  string `json:"loc"`
+		Fn   string `json:"fn"`
+		Cost int    `json:"cost"`
+		Diff int    `json:"diff"`
+	}
+	results := []almostInlinedResult{}
+
 	for _, submatches := range r.messageRE.FindAllStringSubmatch(string(out), -1) {
 		loc := submatches[1]
 		fn := submatches[2]
 		cost := atoi(submatches[3])
 		budget := atoi(submatches[4])
 		diff := cost - budget
-		if diff <= r.threshold {
-			log.Printf("%s: %s: budget exceeded by %d\n", loc, fn, diff)
+
+		if r.threshold == 0 || diff <= r.threshold {
+			results = append(results, almostInlinedResult{
+				Loc:  loc,
+				Fn:   fn,
+				Cost: cost,
+				Diff: diff,
+			})
 		}
 	}
 
+	if asJSON {
+		marshalJSON(results)
+		return nil
+	}
+
+	for _, r := range results {
+		log.Printf("%s: %s: budget exceeded by %d\n", r.Loc, r.Fn, r.Diff)
+	}
 	return nil
 }
