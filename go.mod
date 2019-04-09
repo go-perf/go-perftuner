@@ -1,3 +1,3 @@
-module github.com/go-perftuner/go-perftuner
+module github.com/cristaloleg/go-perftuner
 
 go 1.12
