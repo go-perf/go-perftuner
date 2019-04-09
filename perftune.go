@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+var asJSON bool
+
 var subCommands = []*subCommand{
 	{
 		runner:    &almostInlinedRunner{},
@@ -64,8 +66,11 @@ func main() {
 		flag.PrintDefaults()
 	}
 
+	flag.BoolVar(&asJSON, "json", false, `return result as JSON`)
+
 	cmd.runner.Init()
 	flag.Parse()
+
 	for _, pkg := range flag.Args() {
 		log.SetPrefix(sub + ": " + pkg + ": ")
 		if err := cmd.runner.Run(pkg); err != nil {

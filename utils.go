@@ -1,6 +1,10 @@
 package main
 
-import "strconv"
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+)
 
 func atoi(s string) int {
 	v, err := strconv.Atoi(s)
@@ -8,4 +12,9 @@ func atoi(s string) int {
 		return 0
 	}
 	return v
+}
+
+func marshalJSON(results interface{}) {
+	raw, _ := json.MarshalIndent(results, "", "  ")
+	fmt.Printf("%s", string(raw))
 }
