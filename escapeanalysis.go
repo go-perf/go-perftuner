@@ -19,7 +19,7 @@ func (r *escapeAnalysisRunner) Init() {
 }
 
 func (r *escapeAnalysisRunner) Run(pkg string) error {
-	cmd := exec.Command("go", "build", "-gcflags", "-m -m", pkg)
+	cmd := exec.Command("go", r.getCmd(pkg)...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -50,4 +50,8 @@ func (r *escapeAnalysisRunner) Run(pkg string) error {
 		log.Printf("%s: %s\n", r.Loc, r.Variable)
 	}
 	return nil
+}
+
+func (r *escapeAnalysisRunner) getCmd(pkg string) []string {
+	return goArgs(pkg, goArgsBuild, goArgsGcFlags("-m -m"))
 }

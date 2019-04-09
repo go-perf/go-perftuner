@@ -24,7 +24,7 @@ func (r *almostInlinedRunner) Init() {
 }
 
 func (r *almostInlinedRunner) Run(pkg string) error {
-	cmd := exec.Command("go", "build", "-gcflags", "-m=2", pkg)
+	cmd := exec.Command("go", r.getCmd(pkg)...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -64,4 +64,8 @@ func (r *almostInlinedRunner) Run(pkg string) error {
 		log.Printf("%s: %s: budget exceeded by %d\n", r.Loc, r.Fn, r.Diff)
 	}
 	return nil
+}
+
+func (r *almostInlinedRunner) getCmd(pkg string) []string {
+	return goArgs(pkg, goArgsBuild, goArgsGcFlags("-m=2"))
 }
