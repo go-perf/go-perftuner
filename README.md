@@ -25,7 +25,7 @@ $ go-perftuner almostInlined std
 
 ## almostInlined
 
-Find functions that cross inlining threshold just barely.
+Find functions that cross inlining threshold just barely. You may use short command `inl`.
 
 ```bash
 $ go-perftuner almostInlined -threshold=1 std
@@ -42,7 +42,7 @@ almostInlined: std: src/net/http/transfer.go:259:6: (*transferWriter).shouldSend
 
 ## escapedVariables
 
-Find variables that are escaped to the heap.
+Find variables that are escaped to the heap. You may use short command `esc`.
 
 ```bash
 $ go-perftuner escapedVariables fmt
@@ -53,7 +53,7 @@ escapedVariables: fmt: src/fmt/format.go:208:14: make([]byte, width)
 
 ## boundChecks
 
-Find slice/array that has bound check.
+Find slice/array that has bound check. You may use short command `bce`.
 
 ```bash
 $ go-perftuner boundChecks fmt
