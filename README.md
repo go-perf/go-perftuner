@@ -23,11 +23,11 @@ $ go get -u github.com/go-perf/go-perftuner
 $ go-perftuner
 
 # Run almostInlined sub-command on strings and bytes package:
-$ go-perftuner inl strings bytes
+$ go-perftuner almostInlined strings bytes
 
 # You can use "std" or "..." package name.
 # These follow "go build" conventions.
-$ go-perftuner inl std
+$ go-perftuner almostInlined std
 ```
 
 # Sub-commands
