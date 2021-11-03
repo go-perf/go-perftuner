@@ -31,21 +31,24 @@ func main() {
 
 var cmds = []acmd.Command{
 	{
-		Name:        "inl",
+		Name:        "almostInlined",
+		Alias:       "inl",
 		Description: "find functions that cross inlining threshold just barely",
 		Do: func(_ context.Context, _ []string) error {
 			return run(&almostInlinedRunner{})
 		},
 	},
 	{
-		Name:        "esc",
+		Name:        "escapedVariables",
+		Alias:       "esc",
 		Description: "find variables that are escaped to the heap",
 		Do: func(_ context.Context, _ []string) error {
 			return run(&escapeAnalysisRunner{})
 		},
 	},
 	{
-		Name:        "bce",
+		Name:        "boundChecks",
+		Alias:       "bce",
 		Description: "find slice/array that has bound check",
 		Do: func(_ context.Context, _ []string) error {
 			return run(&boundCheckRunner{})
