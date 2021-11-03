@@ -6,11 +6,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/cristalhq/acmd"
 )
 
 const version = "v0.0.0"
+
+var (
+	flagMod string
+	asJSON  bool
+)
 
 func main() {
 	if len(os.Args) < 2 {
@@ -18,6 +24,7 @@ func main() {
 	}
 
 	log.SetFlags(0)
+	flag.StringVar(&flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
 	flag.BoolVar(&asJSON, "json", false, `return result as JSON`)
 	flag.Parse()
 
@@ -56,6 +63,11 @@ var cmds = []acmd.Command{
 	},
 }
 
+type subCommandRunner interface {
+	Init()
+	Run(pkg string) error
+}
+
 func run(cmd subCommandRunner) error {
 	cmd.Init()
 	for _, pkg := range flag.Args()[1:] {
@@ -66,9 +78,31 @@ func run(cmd subCommandRunner) error {
 	return nil
 }
 
-var asJSON bool
+type goArgFunc func() []string
 
-type subCommandRunner interface {
-	Init()
-	Run(pkg string) error
+func goArgs(pkg string, argFuncs ...goArgFunc) (args []string) {
+	for _, f := range argFuncs {
+		args = append(args, f()...)
+	}
+	args = append(args, goArgsMod()...)
+	args = append(args, pkg)
+
+	return
+}
+
+func goArgsBuild() []string {
+	return []string{"build"}
+}
+
+func goArgsGcFlags(flags ...string) goArgFunc {
+	return func() []string {
+		return []string{"-gcflags", strings.Join(flags, " ")}
+	}
+}
+
+func goArgsMod() (args []string) {
+	if flagMod != "" {
+		args = append(args, "-mod", flagMod)
+	}
+	return args
 }
