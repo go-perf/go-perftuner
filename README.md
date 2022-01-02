@@ -20,7 +20,7 @@ The original implementation was started by [@quasilyte](https://github.com/quasi
 $ go get -u github.com/go-perf/go-perftuner
 
 # Check installation (prints help):
-$ go-perftuner
+$ go-perftuner help
 
 # Run almostInlined sub-command on strings and bytes package:
 $ go-perftuner almostInlined strings bytes
