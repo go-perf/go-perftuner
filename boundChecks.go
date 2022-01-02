@@ -18,7 +18,9 @@ func (r *boundCheckRunner) Init() {
 }
 
 func (r *boundCheckRunner) Run(pkg string) error {
-	cmd := exec.Command("go", r.getCmd(pkg)...)
+	args := r.getCmd(pkg)
+	log.Printf("args: %+v\n", args)
+	cmd := exec.Command("go", args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)

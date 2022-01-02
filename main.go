@@ -15,6 +15,7 @@ const version = "v0.0.0"
 
 var (
 	flagMod string
+	tags    string
 	asJSON  bool
 )
 
@@ -25,6 +26,7 @@ func main() {
 
 	log.SetFlags(0)
 	flag.StringVar(&flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
+	flag.StringVar(&tags, "tags", "", `-tags compiler flag`)
 	flag.BoolVar(&asJSON, "json", false, `return result as JSON`)
 	flag.Parse()
 
@@ -85,6 +87,7 @@ func goArgs(pkg string, argFuncs ...goArgFunc) (args []string) {
 		args = append(args, f()...)
 	}
 	args = append(args, goArgsMod()...)
+	args = append(args, goTags()...)
 	args = append(args, pkg)
 
 	return
@@ -103,6 +106,13 @@ func goArgsGcFlags(flags ...string) goArgFunc {
 func goArgsMod() (args []string) {
 	if flagMod != "" {
 		args = append(args, "-mod", flagMod)
+	}
+	return args
+}
+
+func goTags() (args []string) {
+	if tags != "" {
+		args = append(args, "-tags", tags)
 	}
 	return args
 }
