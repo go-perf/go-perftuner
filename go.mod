@@ -1,4 +1,4 @@
-module github.com/cristaloleg/go-perftuner
+module github.com/go-perf/go-perftuner
 
 go 1.10
 
