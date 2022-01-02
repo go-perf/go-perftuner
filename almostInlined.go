@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os/exec"
 	"regexp"
 )
@@ -61,7 +60,7 @@ func (r *almostInlinedRunner) Run(pkg string) error {
 	}
 
 	for _, r := range results {
-		log.Printf("%s: %s: budget exceeded by %d\n", r.Loc, r.Fn, r.Diff)
+		fmt.Printf("%s: %s: budget exceeded by %d\n", r.Loc, r.Fn, r.Diff)
 	}
 	return nil
 }

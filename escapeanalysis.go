@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"regexp"
 )
@@ -47,7 +46,7 @@ func (r *escapeAnalysisRunner) Run(pkg string) error {
 	}
 
 	for _, r := range results {
-		log.Printf("%s: %s\n", r.Loc, r.Variable)
+		fmt.Printf("%s: %s\n", r.Loc, r.Variable)
 	}
 	return nil
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"regexp"
 )
@@ -42,7 +41,7 @@ func (r *boundCheckRunner) Run(pkg string) error {
 	}
 
 	for _, r := range results {
-		log.Printf("%s: slice/array has bound checks\n", r.Loc)
+		fmt.Printf("%s: slice/array has bound checks\n", r.Loc)
 	}
 	return nil
 }

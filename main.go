@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -19,11 +18,6 @@ var (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		panic("not enough arguments, expected sub-command name")
-	}
-
-	log.SetFlags(0)
 	flag.StringVar(&flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
 	flag.BoolVar(&asJSON, "json", false, `return result as JSON`)
 	flag.Parse()
@@ -32,7 +26,8 @@ func main() {
 		Version: version,
 	})
 	if err := r.Run(); err != nil {
-		log.Fatal(fmt.Errorf("dbumper: %w", err))
+		fmt.Printf("go-perf: %v\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -72,7 +67,7 @@ func run(cmd subCommandRunner) error {
 	cmd.Init()
 	for _, pkg := range flag.Args()[1:] {
 		if err := cmd.Run(pkg); err != nil {
-			log.Printf("%s: %v", pkg, err)
+			fmt.Printf("%s: %v", pkg, err)
 		}
 	}
 	return nil
