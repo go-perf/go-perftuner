@@ -24,7 +24,7 @@ jobs:
         go-version: ^1.x
 
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Test
       run: go test -v -coverprofile=coverage.txt ./...
@@ -43,7 +43,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Checkout with tags
         run: git fetch --prune --unshallow --tags
