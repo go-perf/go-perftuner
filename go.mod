@@ -2,4 +2,4 @@ module github.com/go-perf/go-perftuner
 
 go 1.10
 
-require github.com/cristalhq/acmd v0.5.0
+require github.com/cristalhq/acmd v0.7.0
