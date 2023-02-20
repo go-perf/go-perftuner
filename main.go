@@ -36,7 +36,7 @@ var cmds = []acmd.Command{
 		Name:        "almostInlined",
 		Alias:       "inl",
 		Description: "find functions that cross inlining threshold just barely",
-		Do: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, _ []string) error {
 			return run(&almostInlinedRunner{})
 		},
 	},
@@ -44,7 +44,7 @@ var cmds = []acmd.Command{
 		Name:        "escapedVariables",
 		Alias:       "esc",
 		Description: "find variables that are escaped to the heap",
-		Do: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, _ []string) error {
 			return run(&escapeAnalysisRunner{})
 		},
 	},
@@ -52,7 +52,7 @@ var cmds = []acmd.Command{
 		Name:        "boundChecks",
 		Alias:       "bce",
 		Description: "find slice/array that has bound check",
-		Do: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, _ []string) error {
 			return run(&boundCheckRunner{})
 		},
 	},
