@@ -56,6 +56,14 @@ var cmds = []acmd.Command{
 			return run(&boundCheckRunner{})
 		},
 	},
+	{
+		Name:        "funcSize",
+		Alias:       "fsize",
+		Description: "list function machine code sizes in bytes",
+		ExecFunc: func(_ context.Context, _ []string) error {
+			return run(&funcSizeRunner{})
+		},
+	},
 }
 
 type subCommandRunner interface {
