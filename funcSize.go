@@ -8,14 +8,19 @@ import (
 
 type funcSizeRunner struct {
 	messageRE *regexp.Regexp
+	filterRE  *regexp.Regexp
 }
 
 func (r *funcSizeRunner) Init() {
 	r.messageRE = regexp.MustCompile(`(.*) STEXT.* size=(\d+)`)
+	if filter != "" {
+		r.filterRE = regexp.MustCompile(filter)
+	}
 }
 
 func (r *funcSizeRunner) Run(pkg string) error {
 	cmd := exec.Command("go", r.getCmd(pkg)...)
+
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -27,13 +32,15 @@ func (r *funcSizeRunner) Run(pkg string) error {
 	}
 	results := []resultRow{}
 
-	// TODO: add a CLI flag for the function name filtering?
-	// Having to use a grep in 99% of use cases is not very convenient.
 	for _, submatches := range r.messageRE.FindAllStringSubmatch(string(out), -1) {
-		results = append(results, resultRow{
-			Fn:   submatches[1],
-			Size: submatches[2],
-		})
+		fn, size := submatches[1], submatches[2]
+
+		if r.passesFilter(fn) {
+			results = append(results, resultRow{
+				Fn:   fn,
+				Size: size,
+			})
+		}
 	}
 
 	if asJSON {
@@ -45,6 +52,10 @@ func (r *funcSizeRunner) Run(pkg string) error {
 		fmt.Printf("%s: %s bytes\n", r.Fn, r.Size)
 	}
 	return nil
+}
+
+func (r *funcSizeRunner) passesFilter(fn string) bool {
+	return r.filterRE == nil || r.filterRE.MatchString(fn)
 }
 
 func (r *funcSizeRunner) getCmd(pkg string) []string {

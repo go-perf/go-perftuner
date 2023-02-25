@@ -14,6 +14,7 @@ const version = "v0.0.0"
 var (
 	flagMod string
 	asJSON  bool
+	filter  string
 )
 
 func main() {
@@ -99,6 +100,7 @@ func parseArgs(cmd string, args []string) error {
 	fset := flag.NewFlagSet(cmd, flag.ContinueOnError)
 	fset.StringVar(&flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
 	fset.BoolVar(&asJSON, "json", false, `return result as JSON`)
+	fset.StringVar(&filter, "filter", "", "regex to filter the results")
 	return fset.Parse(args)
 }
 
