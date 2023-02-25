@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/cristalhq/acmd"
@@ -26,8 +25,7 @@ func main() {
 		Version: version,
 	})
 	if err := r.Run(); err != nil {
-		fmt.Printf("go-perf: %v\n", err)
-		os.Exit(1)
+		r.Exit(err)
 	}
 }
 
@@ -36,7 +34,10 @@ var cmds = []acmd.Command{
 		Name:        "almostInlined",
 		Alias:       "inl",
 		Description: "find functions that cross inlining threshold just barely",
-		ExecFunc: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, args []string) error {
+			if err := parseArgs("almostInlined", args); err != nil {
+				return err
+			}
 			return run(&almostInlinedRunner{})
 		},
 	},
@@ -44,7 +45,10 @@ var cmds = []acmd.Command{
 		Name:        "escapedVariables",
 		Alias:       "esc",
 		Description: "find variables that are escaped to the heap",
-		ExecFunc: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, args []string) error {
+			if err := parseArgs("escapedVariables", args); err != nil {
+				return err
+			}
 			return run(&escapeAnalysisRunner{})
 		},
 	},
@@ -52,7 +56,10 @@ var cmds = []acmd.Command{
 		Name:        "boundChecks",
 		Alias:       "bce",
 		Description: "find slice/array that has bound check",
-		ExecFunc: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, args []string) error {
+			if err := parseArgs("boundChecks", args); err != nil {
+				return err
+			}
 			return run(&boundCheckRunner{})
 		},
 	},
@@ -60,7 +67,10 @@ var cmds = []acmd.Command{
 		Name:        "funcSize",
 		Alias:       "fsize",
 		Description: "list function machine code sizes in bytes",
-		ExecFunc: func(_ context.Context, _ []string) error {
+		ExecFunc: func(_ context.Context, args []string) error {
+			if err := parseArgs("funcSize", args); err != nil {
+				return err
+			}
 			return run(&funcSizeRunner{})
 		},
 	},
@@ -74,11 +84,22 @@ type subCommandRunner interface {
 func run(cmd subCommandRunner) error {
 	cmd.Init()
 	for _, pkg := range flag.Args()[1:] {
+		// skip - and -- paramets
+		if strings.HasPrefix(pkg, "-") {
+			continue
+		}
 		if err := cmd.Run(pkg); err != nil {
 			fmt.Printf("%s: %v", pkg, err)
 		}
 	}
 	return nil
+}
+
+func parseArgs(cmd string, args []string) error {
+	fset := flag.NewFlagSet(cmd, flag.ContinueOnError)
+	fset.StringVar(&flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
+	fset.BoolVar(&asJSON, "json", false, `return result as JSON`)
+	return fset.Parse(args)
 }
 
 type goArgFunc func() []string
