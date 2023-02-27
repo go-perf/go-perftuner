@@ -74,6 +74,14 @@ var cmds = []acmd.Command{
 			return run(&funcSizeRunner{})
 		},
 	},
+	{
+		Name:        "benchstat",
+		Alias:       "bs",
+		Description: "stricter benchstat with colors",
+		ExecFunc: func(_ context.Context, args []string) error {
+			return runBenchstat(args)
+		},
+	},
 }
 
 type subCommandRunner interface {
