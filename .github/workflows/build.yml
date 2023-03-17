@@ -26,6 +26,8 @@ jobs:
 
   release:
     if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
     uses: cristalhq/.github/.github/workflows/release.yml@v0.3.0
     with:
       tag: ${{ github.event.input.tag }}
