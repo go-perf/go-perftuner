@@ -1,24 +1,52 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"os/exec"
 	"regexp"
 )
 
 type escapeAnalysisRunner struct {
+	flagMod string
+	asJSON  bool
+
 	messageRE *regexp.Regexp
 }
 
-func (r *escapeAnalysisRunner) Init() {
+func (r *escapeAnalysisRunner) ExecCommand(_ context.Context, args []string) error {
+	fset := flag.NewFlagSet("escapeAnalysis", flag.ContinueOnError)
+	fset.StringVar(&r.flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
+	fset.BoolVar(&r.asJSON, "json", false, `return result as JSON`)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
+
+	args = fset.Args()
+	if len(args) == 0 {
+		args = []string{"."}
+	}
+
 	const location = `(.*:\d+:\d+)`
 	const variable = `(.*)`
 	const pat = location + `: ` + variable + `escapes to heap`
 	r.messageRE = regexp.MustCompile(pat)
+
+	for _, pkg := range args {
+		if err := r.process(pkg); err != nil {
+			fmt.Printf("%s: %v", pkg, err)
+		}
+	}
+	return nil
 }
 
-func (r *escapeAnalysisRunner) Run(pkg string) error {
-	cmd := exec.Command("go", r.getCmd(pkg)...)
+func (r *escapeAnalysisRunner) Init() {}
+
+func (r *escapeAnalysisRunner) Run(pkg string) error { return nil }
+
+func (r *escapeAnalysisRunner) process(pkg string) error {
+	cmd := exec.Command("go", r.getCmdArgs(pkg)...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -40,7 +68,7 @@ func (r *escapeAnalysisRunner) Run(pkg string) error {
 		})
 	}
 
-	if asJSON {
+	if r.asJSON {
 		marshalJSON(results)
 		return nil
 	}
@@ -51,6 +79,11 @@ func (r *escapeAnalysisRunner) Run(pkg string) error {
 	return nil
 }
 
-func (r *escapeAnalysisRunner) getCmd(pkg string) []string {
-	return goArgs(pkg, goArgsBuild, goArgsGcFlags("-m -m"))
+func (r *escapeAnalysisRunner) getCmdArgs(pkg string) []string {
+	args := []string{"build", "-gcflags", "-m -m"}
+	if r.flagMod != "" {
+		args = append(args, "-mod", r.flagMod)
+	}
+	args = append(args, pkg)
+	return args
 }

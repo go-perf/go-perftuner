@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os/exec"
@@ -8,22 +9,42 @@ import (
 )
 
 type almostInlinedRunner struct {
+	flagMod   string
+	asJSON    bool
 	threshold int
 
 	messageRE *regexp.Regexp
 }
 
-func (r *almostInlinedRunner) Init() {
+func (r *almostInlinedRunner) ExecCommand(_ context.Context, args []string) error {
+	fset := flag.NewFlagSet("boundCheck", flag.ContinueOnError)
+	fset.StringVar(&r.flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
+	fset.BoolVar(&r.asJSON, "json", false, `return result as JSON`)
 	flag.IntVar(&r.threshold, "threshold", 10, `max inliner budget overflow threshold`)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
+
+	args = fset.Args()
+	if len(args) == 0 {
+		args = []string{"."}
+	}
 
 	const location = `(.*:\d+:\d+)`
 	const function = `((?:\S*)?\w+)`
 	const pat = location + `: .*? ` + function + `: function too complex: cost (\d+) exceeds budget (\d+)`
 	r.messageRE = regexp.MustCompile(pat)
+
+	for _, pkg := range args {
+		if err := r.process(pkg); err != nil {
+			fmt.Printf("%s: %v", pkg, err)
+		}
+	}
+	return nil
 }
 
-func (r *almostInlinedRunner) Run(pkg string) error {
-	cmd := exec.Command("go", r.getCmd(pkg)...)
+func (r *almostInlinedRunner) process(pkg string) error {
+	cmd := exec.Command("go", r.getCmdArgs(pkg)...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -54,7 +75,7 @@ func (r *almostInlinedRunner) Run(pkg string) error {
 		}
 	}
 
-	if asJSON {
+	if r.asJSON {
 		marshalJSON(results)
 		return nil
 	}
@@ -65,6 +86,11 @@ func (r *almostInlinedRunner) Run(pkg string) error {
 	return nil
 }
 
-func (r *almostInlinedRunner) getCmd(pkg string) []string {
-	return goArgs(pkg, goArgsBuild, goArgsGcFlags("-m=2"))
+func (r *almostInlinedRunner) getCmdArgs(pkg string) []string {
+	args := []string{"build", "-gcflags", "-m=2"}
+	if r.flagMod != "" {
+		args = append(args, "-mod", r.flagMod)
+	}
+	args = append(args, pkg)
+	return args
 }

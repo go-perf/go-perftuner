@@ -1,23 +1,45 @@
 package main
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"os/exec"
 	"regexp"
 )
 
 type boundCheckRunner struct {
+	flagMod string
+	asJSON  bool
+
 	messageRE *regexp.Regexp
 }
 
-func (r *boundCheckRunner) Init() {
-	const location = `(.*:\d+:\d+)`
-	const pat = location + `: Found Is(Slice)?InBounds`
-	r.messageRE = regexp.MustCompile(pat)
+func (r *boundCheckRunner) ExecCommand(_ context.Context, args []string) error {
+	fset := flag.NewFlagSet("boundCheck", flag.ContinueOnError)
+	fset.StringVar(&r.flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
+	fset.BoolVar(&r.asJSON, "json", false, `return result as JSON`)
+	if err := fset.Parse(args); err != nil {
+		return err
+	}
+
+	args = fset.Args()
+	if len(args) == 0 {
+		args = []string{"."}
+	}
+
+	r.messageRE = regexp.MustCompile(`(.*:\d+:\d+): Found Is(Slice)?InBounds`)
+
+	for _, pkg := range args {
+		if err := r.process(pkg); err != nil {
+			fmt.Printf("%s: %v", pkg, err)
+		}
+	}
+	return nil
 }
 
-func (r *boundCheckRunner) Run(pkg string) error {
-	cmd := exec.Command("go", r.getCmd(pkg)...)
+func (r *boundCheckRunner) process(pkg string) error {
+	cmd := exec.Command("go", r.getCmdArgs(pkg)...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%v: %s", err, out)
@@ -35,7 +57,7 @@ func (r *boundCheckRunner) Run(pkg string) error {
 		})
 	}
 
-	if asJSON {
+	if r.asJSON {
 		marshalJSON(results)
 		return nil
 	}
@@ -46,6 +68,11 @@ func (r *boundCheckRunner) Run(pkg string) error {
 	return nil
 }
 
-func (r *boundCheckRunner) getCmd(pkg string) []string {
-	return goArgs(pkg, goArgsBuild, goArgsGcFlags("-d=ssa/check_bce/debug=1"))
+func (r *boundCheckRunner) getCmdArgs(pkg string) []string {
+	args := []string{"build", "-gcflags", "-d=ssa/check_bce/debug=1"}
+	if r.flagMod != "" {
+		args = append(args, "-mod", r.flagMod)
+	}
+	args = append(args, pkg)
+	return args
 }
