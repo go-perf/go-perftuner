@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -13,7 +14,9 @@ import (
 	"golang.org/x/perf/benchstat"
 )
 
-func runBenchstat(args []string) error {
+type benchstatRunner struct{}
+
+func (r *benchstatRunner) ExecCommand(_ context.Context, args []string) error {
 	fset := flag.NewFlagSet("benchstat", flag.ContinueOnError)
 	flagDeltaTest := fset.String("delta-test", "utest", "significance `test` to apply to delta: utest, ttest, or none")
 	flagAlpha := fset.Float64("alpha", 0.05, "consider change significant if p < `α`")
@@ -96,9 +99,9 @@ func runBenchstat(args []string) error {
 	}
 
 	tables := c.Tables()
-	fixBenchstatTables(tables)
+	r.fixBenchstatTables(tables)
 	if colorsEnabled {
-		colorizeBenchstatTables(tables)
+		r.colorizeBenchstatTables(tables)
 	}
 
 	var buf bytes.Buffer
@@ -108,7 +111,7 @@ func runBenchstat(args []string) error {
 	return nil
 }
 
-func fixBenchstatTables(tables []*benchstat.Table) {
+func (r *benchstatRunner) fixBenchstatTables(tables []*benchstat.Table) {
 	disabledGeomean := map[string]struct{}{}
 	for _, table := range tables {
 		selectedRows := table.Rows[:0]
@@ -146,49 +149,49 @@ func fixBenchstatTables(tables []*benchstat.Table) {
 	}
 }
 
-func colorizeBenchstatTables(tables []*benchstat.Table) {
+func (r *benchstatRunner) colorizeBenchstatTables(tables []*benchstat.Table) {
 	for _, table := range tables {
 		for _, row := range table.Rows {
-			if isEpsilonDelta(row.Metrics) {
-				row.Delta = yellowColorize("~")
+			if r.isEpsilonDelta(row.Metrics) {
+				row.Delta = r.yellowColorize("~")
 				continue
 			}
 
-			d := calculateCombinedMeanDiff(row.Metrics)
-			if isTinyValue(row.Metrics) {
+			d := r.calculateCombinedMeanDiff(row.Metrics)
+			if r.isTinyValue(row.Metrics) {
 				d *= 2 // For tiny values, require x2 precision.
 			}
 
 			d++
 			if math.Abs(row.PctDelta) < d {
-				row.Delta = yellowColorize("~")
+				row.Delta = r.yellowColorize("~")
 				continue
 			}
 
 			switch {
 			case strings.HasPrefix(row.Delta, "+"):
-				row.Delta = redColorize(row.Delta)
+				row.Delta = r.redColorize(row.Delta)
 			case strings.HasPrefix(row.Delta, "-"):
-				row.Delta = greenColorize(row.Delta)
+				row.Delta = r.greenColorize(row.Delta)
 			default:
-				row.Delta = yellowColorize(row.Delta)
+				row.Delta = r.yellowColorize(row.Delta)
 			}
 		}
 	}
 }
 
-func isEpsilonDelta(metrics []*benchstat.Metrics) bool {
+func (r *benchstatRunner) isEpsilonDelta(metrics []*benchstat.Metrics) bool {
 	if len(metrics) != 2 {
 		return false
 	}
 
-	eps := getValueEpsilon(avgValue(metrics))
+	eps := r.getValueEpsilon(r.avgValue(metrics))
 	m0 := metrics[0].Mean
 	m1 := metrics[1].Mean
 	return math.Abs(m0-m1) <= eps
 }
 
-func avgValue(metrics []*benchstat.Metrics) float64 {
+func (r *benchstatRunner) avgValue(metrics []*benchstat.Metrics) float64 {
 	var sum float64
 	for _, m := range metrics {
 		sum += m.Mean
@@ -196,7 +199,7 @@ func avgValue(metrics []*benchstat.Metrics) float64 {
 	return sum / float64(len(metrics))
 }
 
-func getValueEpsilon(avg float64) float64 {
+func (r *benchstatRunner) getValueEpsilon(avg float64) float64 {
 	switch {
 	case avg < 10:
 		return 1
@@ -209,17 +212,17 @@ func getValueEpsilon(avg float64) float64 {
 	}
 }
 
-func calculateCombinedMeanDiff(metrics []*benchstat.Metrics) float64 {
+func (r *benchstatRunner) calculateCombinedMeanDiff(metrics []*benchstat.Metrics) float64 {
 	var sum float64
 	for _, m := range metrics {
 		if m.Max != m.Min {
-			sum += 100.0 * calculateMeanDiff(m)
+			sum += 100.0 * r.calculateMeanDiff(m)
 		}
 	}
 	return sum
 }
 
-func calculateMeanDiff(m *benchstat.Metrics) float64 {
+func (r *benchstatRunner) calculateMeanDiff(m *benchstat.Metrics) float64 {
 	if m.Mean == 0 || m.Max == 0 {
 		return 0
 	}
@@ -231,7 +234,7 @@ func calculateMeanDiff(m *benchstat.Metrics) float64 {
 	return diff
 }
 
-func isTinyValue(metrics []*benchstat.Metrics) bool {
+func (r *benchstatRunner) isTinyValue(metrics []*benchstat.Metrics) bool {
 	const tinyValueThreshold = 32.0 // in nanosecs
 
 	for _, m := range metrics {
@@ -242,6 +245,6 @@ func isTinyValue(metrics []*benchstat.Metrics) bool {
 	return true
 }
 
-func redColorize(s string) string    { return "\033[31m" + s + "\033[0m" }
-func greenColorize(s string) string  { return "\033[32m" + s + "\033[0m" }
-func yellowColorize(s string) string { return "\033[33m" + s + "\033[0m" }
+func (r *benchstatRunner) redColorize(s string) string    { return "\033[31m" + s + "\033[0m" }
+func (r *benchstatRunner) greenColorize(s string) string  { return "\033[32m" + s + "\033[0m" }
+func (r *benchstatRunner) yellowColorize(s string) string { return "\033[33m" + s + "\033[0m" }
