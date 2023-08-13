@@ -17,10 +17,10 @@ type almostInlinedRunner struct {
 }
 
 func (r *almostInlinedRunner) ExecCommand(_ context.Context, args []string) error {
-	fset := flag.NewFlagSet("boundCheck", flag.ContinueOnError)
+	fset := flag.NewFlagSet("almostInlined", flag.ContinueOnError)
 	fset.StringVar(&r.flagMod, "mod", "", `-mod compiler flag(readonly|vendor)`)
 	fset.BoolVar(&r.asJSON, "json", false, `return result as JSON`)
-	flag.IntVar(&r.threshold, "threshold", 10, `max inliner budget overflow threshold`)
+	fset.IntVar(&r.threshold, "threshold", 10, `max inliner budget overflow threshold`)
 	if err := fset.Parse(args); err != nil {
 		return err
 	}
