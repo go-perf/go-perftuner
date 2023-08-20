@@ -3,7 +3,6 @@
 [![build-img]][build-url]
 [![pkg-img]][pkg-url]
 [![reportcard-img]][reportcard-url]
-[![coverage-img]][coverage-url]
 
 Helper tool for manual Go code optimization.
 
@@ -17,7 +16,7 @@ The original implementation was started by [@quasilyte](https://github.com/quasi
 
 ```bash
 # Install go-perftuner:
-$ go get -u github.com/go-perf/go-perftuner
+$ go install github.com/go-perf/go-perftuner@latest
 
 # Check installation (prints help):
 $ go-perftuner help
@@ -82,5 +81,3 @@ boundChecks: fmt: src/fmt/format.go:161:10: slice/array has bound checks
 [pkg-url]: https://pkg.go.dev/github.com/go-perf/go-perftuner
 [reportcard-img]: https://goreportcard.com/badge/go-perf/go-perftuner
 [reportcard-url]: https://goreportcard.com/report/go-perf/go-perftuner
-[coverage-img]: https://codecov.io/gh/go-perf/go-perftuner/branch/main/graph/badge.svg
-[coverage-url]: https://codecov.io/gh/go-perf/go-perftuner
