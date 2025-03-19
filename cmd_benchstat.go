@@ -86,7 +86,6 @@ func (r *benchstatRunner) ExecCommand(_ context.Context, args []string) error {
 		c.Order = order
 	}
 
-	fmt.Printf("args: %+v", args)
 	for _, file := range args {
 		f, err := os.Open(file)
 		if err != nil {
